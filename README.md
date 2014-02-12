@@ -258,11 +258,11 @@ We are going to use a data-driven approach and change the bars position using an
   * Translate the bars by completing and using the code snippet below:
 
 ```javascript
-bars
+groups
    .transition()
    .duration(750)
    .delay(function(d, i) { return i * 10; })
-   .attr("transform", function(d, i) { return "translate("+ ?? +", "+ ?? +")"; }) 
+   .attr("transform", function(d, i) { return "translate("+ ??? +", "+ ??? +")"; }) 
 ```
 
 * Toggle the sort order (descending/ascending) when the user clicks again on the same radio button. (tip: listen to `click` event instead of the `change` event).
