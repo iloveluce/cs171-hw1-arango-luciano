@@ -1,0 +1,8 @@
+<ol>
+<li>It makes the table head span three columns wide.  Since the table will have three columns, the author of the code wanted the table head to be three columns wide. For example colspan = “2” will mean the table head is only two columns wide.
+</li>
+<li>align= “center” which in CSS would be “text-align:center;” . This property centers the text. This is the only property applied directly. It inherits from the table html tag that border=”1” which is the CSS property “border-width:” which simply sets the width of the border.  It also inherits cellpadding = “2” which is the CSS property “padding:” and cellspacing which is the CSS property “border-spacing.” Cellpadding is the padding for every cell, which is the space between the cell and the things inside. Cellspacing is the space between each cell.
+</li>
+
+<li>The difference is that the DOM inspector not only is organized in a tree/list structure but it is updated as the website changes and interactive because any changes you make to it will be displayed on the website. The DOM inspector also allows you to highlight and area in a website to find the corresponding code that created it. A DOM inspector would be useful for seeing how different changes in your code affect a website since you can write things on the DOM and see them affect the website immediately. The HTML source is not that useful other than the fact that it is the static snapshot of the html when the website starts. Maybe you want to download the HTML of a website without the interactive parts starting then HTML source would be useful for that. </li>
+</ol>
