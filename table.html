@@ -5,21 +5,164 @@
   <title>CS171 Homework 1</title>
 
   <style type="text/css">
-  /* YOUR CSS */
+table {
+  font-family: verdana,arial,sans-serif;
+  font-size:14px;
+  border-width: 1px;
+  border-color: gray;
+  border-collapse: collapse;
+  margin-left:auto; 
+  margin-right:auto;
+}
+table th {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: gray;
+}
+table td {
+  border-width: 1px;
+  padding: 8px;
+  border-style: solid;
+  border-color: gray;
+}
+caption {
+  border-width: 3px;
+  border-color: gray;
+
+}
+
+#main-title {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 30px;
+  font-weight: normal;
+  color: #900;
+  margin: 0;
+  text-align: center;
+  padding: 45px; 
+  padding-top: 80px;
+
+}
+tr.gray {
+  background-color: rgb(206, 203, 203); 
+}
+
+tr.white {
+  background-color: white; 
+}
   </style>
 </head>
 <body>
   <script src="http://d3js.org/d3.v3.min.js"></script>
   <script>
-  d3.tsv("unemp_states_us_nov_2013.tsv", function(error, data){
+  d3.text()
+  d3.text("unemp_states_us_nov_2013.tsv", function(error, rawdat){
+      var data = d3.tsv.parseRows(rawdat);
+      
+      title = d3.select("body").append("h1")
+      .attr("id","main-title")
+      .text("Unemployment Rates for States");
 
-      var table = d3.select("body").append("table"),
+      var table = d3.select("body").append("table");
+      
+      var tableTitle = table
+      .append("caption")
+      .text("Unemployment Rates for States Monthly Rankings States Seasonally Adjusted Dec. 2013p");
+
+      thead = table.append("thead"),
       tbody = table.append("tbody");
+      
+      var head = data.shift();
+      
+     
+      var clicked1 = false;
+      var clicked2 = false;
+
+      var hrows = thead.append("tr")
+      var hcells = hrows.selectAll("th")
+      .data(head)
+      .enter()
+      .append("th")
+      .on("click", function(d, i) {
+        if( i == 1)
+        {
+          tbody.selectAll("tr").sort(function(a, b) {
+          if(clicked1)
+          {
+            i = b[1];
+            j = a[1];
+          }
+          else
+          {  
+            i = a[1];
+            j = b[1];
+          }
+          return d3.ascending(i, j);})
+          .attr("class", function(d, i) {
+            if(i % 2 == 0)
+              return "gray"
+            else
+              return "white"
+          });
+        clicked1 = !clicked1;
+        }
+        else if( i == 2)
+        {
+          
+          tbody.selectAll("tr").sort(function(a, b) {
+          if(clicked2)
+          {
+            i = b;
+            j = a;
+          }
+          else
+          {  
+            i = a;
+            j = b;
+          }
+
+          if( i[2] == j[2])
+            return  d3.ascending(i[1], j[1]);
+          else
+            return d3.ascending(i[2], j[2]);})
+          .attr("class", function(d, i) {
+            if(i % 2 == 0)
+              return "gray"
+            else
+              return "white"
+          });
+        clicked2 = !clicked2;
+        }
+        else 
+          return null;
+        
+        })
+      .on("load", function(d, i){
+        tbody.selectAll("tr").sort(function(a, b) {
+          if(a[2] == b[2])
+            return  d3.ascending(a[1], b[1]);
+          else
+            return d3.ascending(a[1], b[1]);
+        });
+      })
+      .text(function(d) { return d; });
+
+      thead.select("th").data(head[0])
+      .attr("class","white"); 
 
       var rows = tbody.selectAll("tr")
       .data(data)
       .enter()
-      .append("tr");
+      .append("tr")
+      .attr("class", function(d, i) {
+      if(i % 2 == 0)
+          return "gray"
+        else
+          return "white"
+      })
+      .on('mouseover', function(){d3.select(this).style('background-color', 'lightyellow');})
+      .on('mouseout', function(){d3.select(this).style('background-color', null);});
+        
 
       var cells = rows.selectAll("td")
       .data(function(row) {
@@ -29,6 +172,15 @@
         })
       .enter()
       .append("td")
+      .attr('class', function(d,i){ return "col_" + i; })
+            .on('mouseover', function(d,i){
+               d3.selectAll('td.col_' + i)
+                    .style('background-color', 'lightyellow');
+            })
+            .on('mouseout', function(d,i){
+               d3.selectAll('td.col_' + i)
+                    .style('background-color', null);
+            })
       .text(function(d) { return d; });
       });
   </script>
