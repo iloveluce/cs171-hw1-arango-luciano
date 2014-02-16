@@ -46,10 +46,22 @@ caption {
 tr.gray {
   background-color: rgb(206, 203, 203); 
 }
+tr#yellow {
+  background-color: lightyellow; 
+}
+td#yellow {
+  background-color: lightyellow; 
+}
 
 tr.white {
   background-color: white; 
 }
+caption.maintable{
+  border: 1px solid black;
+  font-weight:bold;
+
+}
+
   </style>
 </head>
 <body>
@@ -67,7 +79,8 @@ tr.white {
       
       var tableTitle = table
       .append("caption")
-      .text("Unemployment Rates for States Monthly Rankings States Seasonally Adjusted Dec. 2013p");
+      .attr("class","maintable")
+      .html("Unemployment Rates for States" + "</br>" + "Monthly Rankings" + "</br>" + "States Seasonally Adjusted" + "</br>" + "Dec. 2013p");
 
       thead = table.append("thead"),
       tbody = table.append("tbody");
@@ -77,8 +90,18 @@ tr.white {
      
       var clicked1 = false;
       var clicked2 = false;
+      var clicked3 = false;
 
+      
+      var color = d3.scale.linear()
+      .domain([d3.min(data,function(d){return d[2]}),d3.max(data,function(d){return d[2]})])
+      .interpolate(d3.interpolateRgb)
+      .range(["orangered", "silver"]);
+     
       var hrows = thead.append("tr")
+      
+      head.push("Chart")
+
       var hcells = hrows.selectAll("th")
       .data(head)
       .enter()
@@ -89,15 +112,15 @@ tr.white {
           tbody.selectAll("tr").sort(function(a, b) {
           if(clicked1)
           {
-            i = b[1];
-            j = a[1];
+            k = b;
+            l = a;
           }
           else
           {  
-            i = a[1];
-            j = b[1];
+            k = a;
+            l = b;
           }
-          return d3.ascending(i, j);})
+          return d3.ascending(k[1], l[1]);})
           .attr("class", function(d, i) {
             if(i % 2 == 0)
               return "gray"
@@ -105,50 +128,73 @@ tr.white {
               return "white"
           });
         clicked1 = !clicked1;
+        
         }
-        else if( i == 2)
+        else if( i == 2 || i == 3)
         {
           
           tbody.selectAll("tr").sort(function(a, b) {
-          if(clicked2)
+          if((i == 2 && clicked2) || (i == 3 && clicked3))
           {
-            i = b;
-            j = a;
+            k = b;
+            l = a;
           }
           else
           {  
-            i = a;
-            j = b;
+            k = a;
+            l = b;
           }
 
-          if( i[2] == j[2])
-            return  d3.ascending(i[1], j[1]);
+          if(k[2] == l[2])
+            return  d3.ascending(k[1], l[1]);
           else
-            return d3.ascending(i[2], j[2]);})
+            return d3.ascending(k[2], l[2]);})
           .attr("class", function(d, i) {
             if(i % 2 == 0)
               return "gray"
             else
               return "white"
           });
-        clicked2 = !clicked2;
+        if(i == 2)
+          clicked2 = !clicked2;
+        else
+          clicked3 = !clicked3;
         }
         else 
           return null;
         
+        hcells
+        .style("cursor", function(d, i) {
+         if(i == 1  || i == 2 || i == 3)
+        {
+          if(clicked1 || clicked2 || clicked3)
+            return "n-resize";
+          else
+            return "s-resize";
+        }
+      })
+
         })
       .on("load", function(d, i){
         tbody.selectAll("tr").sort(function(a, b) {
           if(a[2] == b[2])
             return  d3.ascending(a[1], b[1]);
           else
-            return d3.ascending(a[1], b[1]);
+            return d3.ascending(a[2], b[2]);
         });
       })
+      .style("cursor", function(d, i) {
+        if(i == 1  || i == 2 || i == 3)
+        {
+          if(clicked1 || clicked2 || clicked3)
+            return "n-resize";
+          else
+            return "s-resize";
+        }
+      })
       .text(function(d) { return d; });
-
-      thead.select("th").data(head[0])
-      .attr("class","white"); 
+      
+      
 
       var rows = tbody.selectAll("tr")
       .data(data)
@@ -160,8 +206,8 @@ tr.white {
         else
           return "white"
       })
-      .on('mouseover', function(){d3.select(this).style('background-color', 'lightyellow');})
-      .on('mouseout', function(){d3.select(this).style('background-color', null);});
+      .on('mouseover', function(){d3.select(this).attr('id', 'yellow');})
+      .on('mouseout', function(){d3.select(this).attr('id', null);});
         
 
       var cells = rows.selectAll("td")
@@ -172,16 +218,35 @@ tr.white {
         })
       .enter()
       .append("td")
+     
       .attr('class', function(d,i){ return "col_" + i; })
             .on('mouseover', function(d,i){
                d3.selectAll('td.col_' + i)
-                    .style('background-color', 'lightyellow');
+                    .attr('id', 'yellow');
             })
             .on('mouseout', function(d,i){
                d3.selectAll('td.col_' + i)
-                    .style('background-color', null);
+                    .attr('id', null);
             })
+      .style('background-color', function(d, i)
+      {
+        
+        if(i == 2)
+        {
+          return color(d);
+        }
+
+      })
       .text(function(d) { return d; });
+
+
+    rows.insert("td").append("svg")
+    .attr("width", 80)
+    .attr("height", 25)
+    .append("rect")
+    .attr("height", 13)
+    .attr("width", function(d) { return parseFloat(d[0]); });
+
       });
   </script>
 </body>
