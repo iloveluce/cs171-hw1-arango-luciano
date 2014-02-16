@@ -71,11 +71,13 @@ caption.maintable{
   d3.text("unemp_states_us_nov_2013.tsv", function(error, rawdat){
       var data = d3.tsv.parseRows(rawdat);
       
-      title = d3.select("body").append("h1")
+      title = d3.select("body")
+      .append("h1")
       .attr("id","main-title")
       .text("Unemployment Rates for States");
 
-      var table = d3.select("body").append("table");
+      var table = d3.select("body")
+      .append("table");
       
       var tableTitle = table
       .append("caption")
@@ -173,7 +175,6 @@ caption.maintable{
             return "s-resize";
         }
       })
-
         })
       .on("load", function(d, i){
         tbody.selectAll("tr").sort(function(a, b) {
