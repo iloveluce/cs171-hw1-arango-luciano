@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 <script src="http://d3js.org/d3.v3.min.js"></script>
   <style type="text/css">
@@ -9,11 +10,33 @@
     }
     text {
         font: 10px sans-serif;
+        text-align: center;
     }
+   #main-title {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 30px;
+  font-weight: normal;
+  color: #900;
+  margin: 0;
+  text-align: center;
+  padding: 45px; 
+  padding-top: 80px;
+
+}
+
   </style>
 </head>
 <body>
+  
+
   <script type="text/javascript">
+
+       
+      title = d3.select("body")
+      .append("h1")
+      .attr("id","main-title")
+      .text("Unemployment Rates for States");
+
 
     var margin = {top: 50, bottom: 10, left:300, right: 40};
     var width = 900 - margin.left - margin.right;
@@ -48,12 +71,92 @@
         .append("g")
         .attr("transform", function(d, i) { return "translate(0, " + yScale(d.State) +")"; });
 
+
       var bars = groups
         .append("rect")
         .attr("width", function(d) { return xScale(d.Rate); })
         .attr("height", bar_height);
 
+                groups.append("text")
+        .attr("x", function(d) { return -10; })
+        .attr("y", function(d) { return bar_height/2; })
+        .text(function(d) { return d.State; })
+        .style("text-anchor", "end")
+
+        groups.append("text")
+        .attr("x", function(d) { return xScale(d.Rate) - 20; })
+        .attr("y", function(d) { return bar_height/2 + 2; })
+        .text(function(d) { return d.Rate; })
+        .style("fill", "#eeeeee")
+
+
+        var Rating = 0;
+        var Stating = 0;
+
+      function reorder () {
+
+        var herewego = this.value;
+
+        if (herewego == "state") { 
+          if (Stating == 0) {
+           moving = data.sort(function(x, y) 
+          {
+          return d3.ascending(x.State, y.State); });
+          Stating = 1;
+          Rating = 0;
+          }
+          else {
+            moving = data.sort(function(x, y) {
+            return d3.descending(x.State, y.State); });
+            Stating = 0;
+            Rating = 0;
+          }
+        }
+
+        else { 
+          if (Rating == 0) {
+          moving = data.sort(function(x, y) { 
+            
+            if (x.Rate != y.Rate) 
+              return d3.ascending(x.Rate, y.Rate);
+          
+            else 
+              return d3.ascending(x.Rate, y.Rate);
+            });
+          Rating = 1;
+          Stating = 0;
+          }
+          
+          else {
+           moving = data.sort(function(x, y) {
+            
+
+          if (x.State != y.State)
+              return d3.descending(x.Rate, y.Rate);
+    
+            else 
+              return d3.descending(x.Rate, y.Rate);
+            });
+          Rating = 0;
+          Stating = 0;
+          }
+
+      };
+          yScale.domain(moving.map(state));
+          groups
+            .transition()
+            .duration(800)
+            .delay(function(d, i) { return i * 10; })
+            .attr("transform", function(d, i) { return "translate(0, "+ yScale(d.State) +")"; }) 
+
+    };
+          d3.selectAll("input").on("click", reorder);
+
+
     });
   </script>
+
+  <label><input type="radio" name="order" value="state"> State</label>
+<label><input type="radio" name="order" value="rate" checked> Rate</label>
 </body>
 </html>
